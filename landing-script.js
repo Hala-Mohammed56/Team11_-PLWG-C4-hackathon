@@ -102,11 +102,11 @@ function initializeNavigation() {
 
     // Mobile menu toggle
     const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-    const navLinks = document.querySelector('.nav-links');
+    const navMenu = document.querySelector('.nav-links');
     
-    if (mobileMenuToggle && navLinks) {
+    if (mobileMenuToggle && navMenu) {
         mobileMenuToggle.addEventListener('click', function() {
-            navLinks.classList.toggle('mobile-open');
+            navMenu.classList.toggle('mobile-open');
         });
     }
 

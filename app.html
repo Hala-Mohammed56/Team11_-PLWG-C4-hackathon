@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Ranking System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-brain"></i>
+                    <h1>AI Resume Ranking</h1>
+                </div>
+                <p class="subtitle">Intelligent recruitment made simple</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Job Description Section -->
+            <section class="job-section">
+                <div class="section-header">
+                    <i class="fas fa-briefcase"></i>
+                    <h2>Job Description</h2>
+                </div>
+                <div class="form-group">
+                    <label for="jobTitle">Job Title</label>
+                    <input type="text" id="jobTitle" placeholder="e.g., Senior Software Engineer" required>
+                </div>
+                <div class="form-group">
+                    <label for="jobDescription">Job Description & Requirements</label>
+                    <textarea id="jobDescription" placeholder="Paste the job description here including required skills, experience, and qualifications..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="requiredSkills">Key Skills (comma-separated)</label>
+                    <input type="text" id="requiredSkills" placeholder="e.g., JavaScript, React, Node.js, Python">
+                </div>
+            </section>
+
+            <!-- Resume Upload Section -->
+            <section class="upload-section">
+                <div class="section-header">
+                    <i class="fas fa-file-upload"></i>
+                    <h2>Upload Resumes</h2>
+                </div>
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h3>Drag & Drop PDF Files</h3>
+                        <p>or <span class="browse-text">browse files</span></p>
+                        <input type="file" id="fileInput" multiple accept=".pdf" hidden>
+                    </div>
+                </div>
+                <div class="uploaded-files" id="uploadedFiles"></div>
+            </section>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-secondary" id="clearBtn">
+                    <i class="fas fa-trash"></i>
+                    Clear All
+                </button>
+                <button class="btn btn-primary" id="analyzeBtn" disabled>
+                    <i class="fas fa-chart-line"></i>
+                    Start Ranking
+                </button>
+            </div>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <div class="section-header">
+                    <i class="fas fa-trophy"></i>
+                    <h2>Ranking Results</h2>
+                </div>
+                <div class="ranking-container" id="rankingContainer">
+                    <!-- Results will be populated here -->
+                </div>
+            </section>
+
+            <!-- Loading Animation -->
+            <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+                <div class="loading-content">
+                    <div class="spinner"></div>
+                    <h3>Analyzing Resumes...</h3>
+                    <p>Our AI is evaluating candidates against job requirements</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2024 AI Resume Ranking System. Powered by Advanced AI Technology.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 

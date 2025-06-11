@@ -3,99 +3,329 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Resume Ranking System</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>AI Resume Ranking - Revolutionize Your Recruitment</title>
+    <link rel="stylesheet" href="landing-styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <div class="logo">
-                    <i class="fas fa-brain"></i>
-                    <h1>AI Resume Ranking</h1>
-                </div>
-                <p class="subtitle">Intelligent recruitment made simple</p>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-brain"></i>
+                <span>AI Resume Ranking</span>
             </div>
-        </header>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#demo">Demo</a>
+                <a href="app.html" class="cta-btn">Get Started</a>
+            </div>
+            <div class="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Job Description Section -->
-            <section class="job-section">
-                <div class="section-header">
-                    <i class="fas fa-briefcase"></i>
-                    <h2>Job Description</h2>
-                </div>
-                <div class="form-group">
-                    <label for="jobTitle">Job Title</label>
-                    <input type="text" id="jobTitle" placeholder="e.g., Senior Software Engineer" required>
-                </div>
-                <div class="form-group">
-                    <label for="jobDescription">Job Description & Requirements</label>
-                    <textarea id="jobDescription" placeholder="Paste the job description here including required skills, experience, and qualifications..." required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="requiredSkills">Key Skills (comma-separated)</label>
-                    <input type="text" id="requiredSkills" placeholder="e.g., JavaScript, React, Node.js, Python">
-                </div>
-            </section>
-
-            <!-- Resume Upload Section -->
-            <section class="upload-section">
-                <div class="section-header">
-                    <i class="fas fa-file-upload"></i>
-                    <h2>Upload Resumes</h2>
-                </div>
-                <div class="upload-area" id="uploadArea">
-                    <div class="upload-content">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <h3>Drag & Drop PDF Files</h3>
-                        <p>or <span class="browse-text">browse files</span></p>
-                        <input type="file" id="fileInput" multiple accept=".pdf" hidden>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        Revolutionize Your <span class="gradient-text">Recruitment</span> with AI
+                    </h1>
+                    <p class="hero-subtitle">
+                        Transform how you hire with our intelligent resume ranking system. 
+                        Find the perfect candidates faster than ever before.
+                    </p>
+                    <div class="hero-stats">
+                        <div class="stat">
+                            <span class="stat-number">95%</span>
+                            <span class="stat-label">Accuracy</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">10x</span>
+                            <span class="stat-label">Faster</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">500+</span>
+                            <span class="stat-label">Companies</span>
+                        </div>
+                    </div>
+                    <div class="hero-buttons">
+                        <a href="app.html" class="btn btn-primary">
+                            <i class="fas fa-rocket"></i>
+                            Start Ranking Now
+                        </a>
+                        <a href="#demo" class="btn btn-secondary">
+                            <i class="fas fa-play"></i>
+                            Watch Demo
+                        </a>
                     </div>
                 </div>
-                <div class="uploaded-files" id="uploadedFiles"></div>
-            </section>
-
-            <!-- Action Buttons -->
-            <div class="action-buttons">
-                <button class="btn btn-secondary" id="clearBtn">
-                    <i class="fas fa-trash"></i>
-                    Clear All
-                </button>
-                <button class="btn btn-primary" id="analyzeBtn" disabled>
-                    <i class="fas fa-chart-line"></i>
-                    Start Ranking
-                </button>
+                <div class="hero-visual">
+                    <div class="floating-cards">
+                        <div class="resume-card card-1">
+                            <div class="card-header">
+                                <i class="fas fa-user-circle"></i>
+                                <div>
+                                    <h4>John Doe</h4>
+                                    <p>Software Engineer</p>
+                                </div>
+                            </div>
+                            <div class="score-badge">94%</div>
+                        </div>
+                        <div class="resume-card card-2">
+                            <div class="card-header">
+                                <i class="fas fa-user-circle"></i>
+                                <div>
+                                    <h4>Sarah Smith</h4>
+                                    <p>Data Scientist</p>
+                                </div>
+                            </div>
+                            <div class="score-badge">87%</div>
+                        </div>
+                        <div class="resume-card card-3">
+                            <div class="card-header">
+                                <i class="fas fa-user-circle"></i>
+                                <div>
+                                    <h4>Mike Johnson</h4>
+                                    <p>UI/UX Designer</p>
+                                </div>
+                            </div>
+                            <div class="score-badge">91%</div>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </div>
+        <div class="hero-waves">
+            <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M1200 120L0 16.48L0 0L1200 0L1200 120Z" fill="white"></path>
+            </svg>
+        </div>
+    </section>
 
-            <!-- Results Section -->
-            <section class="results-section" id="resultsSection" style="display: none;">
-                <div class="section-header">
-                    <i class="fas fa-trophy"></i>
-                    <h2>Ranking Results</h2>
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Why Choose Our AI System?</h2>
+                <p>Powerful features designed to streamline your recruitment process</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>AI-Powered Analysis</h3>
+                    <p>Advanced machine learning algorithms analyze resumes against job requirements with 95% accuracy.</p>
                 </div>
-                <div class="ranking-container" id="rankingContainer">
-                    <!-- Results will be populated here -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Lightning Fast</h3>
+                    <p>Process hundreds of resumes in seconds. Get ranked results instantly and make faster hiring decisions.</p>
                 </div>
-            </section>
-
-            <!-- Loading Animation -->
-            <div class="loading-overlay" id="loadingOverlay" style="display: none;">
-                <div class="loading-content">
-                    <div class="spinner"></div>
-                    <h3>Analyzing Resumes...</h3>
-                    <p>Our AI is evaluating candidates against job requirements</p>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-crosshairs"></i>
+                    </div>
+                    <h3>Skills Matching</h3>
+                    <p>Intelligent skill matching system highlights exact matches between candidates and job requirements.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Smart Rankings</h3>
+                    <p>Candidates are automatically ranked by compatibility score, saving you hours of manual screening.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Mobile Friendly</h3>
+                    <p>Access your recruitment dashboard anywhere, anytime. Fully responsive design for all devices.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Secure & Private</h3>
+                    <p>Enterprise-grade security ensures your candidate data remains private and protected.</p>
                 </div>
             </div>
-        </main>
+        </div>
+    </section>
 
-        <!-- Footer -->
-    </div>
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2>How It Works</h2>
+                <p>Simple 3-step process to find your ideal candidates</p>
+            </div>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Upload Job Description</h3>
+                        <p>Paste your job posting and specify required skills. Our AI understands context and requirements.</p>
+                        <div class="step-visual">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Upload Resumes</h3>
+                        <p>Drag and drop PDF resumes or upload multiple files at once. Support for bulk uploads.</p>
+                        <div class="step-visual">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Get Ranked Results</h3>
+                        <p>View candidates ranked by compatibility score with detailed analysis and skill matching.</p>
+                        <div class="step-visual">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <script src="script.js"></script>
+    <!-- Demo Section -->
+    <section id="demo" class="demo">
+        <div class="container">
+            <div class="demo-content">
+                <div class="demo-text">
+                    <h2>See It In Action</h2>
+                    <p>Experience the power of AI-driven recruitment. Upload resumes, set job requirements, and watch as our system instantly ranks candidates by compatibility.</p>
+                    <ul class="demo-features">
+                        <li><i class="fas fa-check"></i> Real-time analysis</li>
+                        <li><i class="fas fa-check"></i> Detailed scoring breakdown</li>
+                        <li><i class="fas fa-check"></i> Skills matching visualization</li>
+                        <li><i class="fas fa-check"></i> Export and share results</li>
+                    </ul>
+                    <a href="app.html" class="btn btn-primary">Try Live Demo</a>
+                </div>
+                <div class="demo-visual">
+                    <div class="demo-mockup">
+                        <div class="mockup-header">
+                            <div class="mockup-controls">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                        <div class="mockup-content">
+                            <div class="demo-card">
+                                <div class="demo-ranking">
+                                    <div class="rank-item">
+                                        <span class="rank">#1</span>
+                                        <span class="name">Alex Chen</span>
+                                        <span class="score">96%</span>
+                                    </div>
+                                    <div class="rank-item">
+                                        <span class="rank">#2</span>
+                                        <span class="name">Emily Rodriguez</span>
+                                        <span class="score">89%</span>
+                                    </div>
+                                    <div class="rank-item">
+                                        <span class="rank">#3</span>
+                                        <span class="name">David Kim</span>
+                                        <span class="score">84%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Transform Your Hiring Process?</h2>
+                <p>Join hundreds of companies already using AI to find the best candidates faster.</p>
+                <div class="cta-buttons">
+                    <a href="app.html" class="btn btn-primary btn-large">
+                        <i class="fas fa-rocket"></i>
+                        Get Started Free
+                    </a>
+                    <a href="#contact" class="btn btn-secondary btn-large">
+                        <i class="fas fa-envelope"></i>
+                        Contact Sales
+                    </a>
+                </div>
+                <p class="cta-note">No credit card required • Start ranking in minutes</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-brain"></i>
+                        <span>AI Resume Ranking</span>
+                    </div>
+                    <p>Revolutionizing recruitment with artificial intelligence. Find the perfect candidates faster than ever.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#demo">Demo</a></li>
+                        <li><a href="app.html">Try Now</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="#careers">Careers</a></li>
+                        <li><a href="#blog">Blog</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#help">Help Center</a></li>
+                        <li><a href="#docs">Documentation</a></li>
+                        <li><a href="#api">API</a></li>
+                        <li><a href="#status">Status</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 AI Resume Ranking. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="landing-script.js"></script>
 </body>
 </html> 
