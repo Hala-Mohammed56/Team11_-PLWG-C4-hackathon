@@ -1,14 +1,57 @@
 // Global variables
-let uploadedFiles = [];
+let availableResumes = [];
 let isAnalyzing = false;
+const loadingOverlay = document.createElement('div');
+loadingOverlay.className = 'loading-overlay';
+loadingOverlay.innerHTML = `
+    <div class="loading-spinner"></div>
+    <p>Analyzing resumes...</p>
+`;
+document.body.appendChild(loadingOverlay);
+
+// Add loading overlay styles
+const style = document.createElement('style');
+style.textContent = `
+    .loading-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        color: white;
+    }
+
+    .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+`;
+document.head.appendChild(style);
+
+// Show/hide loading overlay
+function showLoading(show) {
+    loadingOverlay.style.display = show ? 'flex' : 'none';
+}
 
 // DOM elements
-const uploadArea = document.getElementById('uploadArea');
-const fileInput = document.getElementById('fileInput');
-const uploadedFilesContainer = document.getElementById('uploadedFiles');
 const analyzeBtn = document.getElementById('analyzeBtn');
 const clearBtn = document.getElementById('clearBtn');
-const loadingOverlay = document.getElementById('loadingOverlay');
 const resultsSection = document.getElementById('resultsSection');
 const rankingContainer = document.getElementById('rankingContainer');
 
@@ -17,22 +60,61 @@ const jobTitle = document.getElementById('jobTitle');
 const jobDescription = document.getElementById('jobDescription');
 const requiredSkills = document.getElementById('requiredSkills');
 
+// Add notification container
+const notificationContainer = document.createElement('div');
+notificationContainer.className = 'notification-container';
+document.body.appendChild(notificationContainer);
+
+// Add notification styles
+const notificationStyle = document.createElement('style');
+notificationStyle.textContent = `
+    .notification-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 10000;
+    }
+
+    .notification {
+        background: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 10px;
+        animation: slideIn 0.3s ease-out;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .notification.success {
+        border-left: 4px solid #10b981;
+    }
+
+    .notification.error {
+        border-left: 4px solid #ef4444;
+    }
+
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+`;
+document.head.appendChild(notificationStyle);
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     initializeEventListeners();
+    loadAllResumes();
     updateAnalyzeButton();
 });
 
 function initializeEventListeners() {
-    // File upload events
-    uploadArea.addEventListener('click', () => fileInput.click());
-    fileInput.addEventListener('change', handleFileSelect);
-    
-    // Drag and drop events
-    uploadArea.addEventListener('dragover', handleDragOver);
-    uploadArea.addEventListener('dragleave', handleDragLeave);
-    uploadArea.addEventListener('drop', handleDrop);
-    
     // Button events
     analyzeBtn.addEventListener('click', startAnalysis);
     clearBtn.addEventListener('click', clearAll);
@@ -40,270 +122,135 @@ function initializeEventListeners() {
     // Form events
     jobTitle.addEventListener('input', updateAnalyzeButton);
     jobDescription.addEventListener('input', updateAnalyzeButton);
-    
-    // Browse text click
-    document.querySelector('.browse-text').addEventListener('click', (e) => {
-        e.stopPropagation();
-        fileInput.click();
-    });
 }
 
-// File handling functions
-function handleFileSelect(event) {
-    const files = Array.from(event.target.files);
-    addFiles(files);
-    event.target.value = ''; // Reset input
-}
-
-function handleDragOver(event) {
-    event.preventDefault();
-    uploadArea.classList.add('dragover');
-}
-
-function handleDragLeave(event) {
-    event.preventDefault();
-    uploadArea.classList.remove('dragover');
-}
-
-function handleDrop(event) {
-    event.preventDefault();
-    uploadArea.classList.remove('dragover');
-    const files = Array.from(event.dataTransfer.files);
-    const pdfFiles = files.filter(file => file.type === 'application/pdf');
-    
-    if (pdfFiles.length !== files.length) {
-        showNotification('Only PDF files are allowed', 'warning');
+async function loadAllResumes() {
+    try {
+        showLoading(true);
+        const response = await fetch('http://localhost:8001/list-resumes');
+        const data = await response.json();
+        availableResumes = data.resumes;
+        showNotification('Resumes loaded successfully', 'success');
+    } catch (error) {
+        console.error('Error loading resumes:', error);
+        showNotification('Error loading resumes', 'error');
+    } finally {
+        showLoading(false);
     }
-    
-    if (pdfFiles.length > 0) {
-        addFiles(pdfFiles);
-    }
-}
-
-function addFiles(files) {
-    files.forEach(file => {
-        // Check if file already exists
-        const existingFile = uploadedFiles.find(f => f.name === file.name && f.size === file.size);
-        if (existingFile) {
-            showNotification(`File "${file.name}" is already uploaded`, 'warning');
-            return;
-        }
-        
-        // Add file to array
-        uploadedFiles.push(file);
-        
-        // Create file item element
-        createFileItem(file);
-    });
-    
-    updateAnalyzeButton();
-    showNotification(`${files.length} file(s) uploaded successfully`, 'success');
-}
-
-function createFileItem(file) {
-    const fileItem = document.createElement('div');
-    fileItem.className = 'file-item';
-    fileItem.innerHTML = `
-        <div class="file-info">
-            <i class="fas fa-file-pdf"></i>
-            <div>
-                <div class="file-name">${file.name}</div>
-                <div class="file-size">${formatFileSize(file.size)}</div>
-            </div>
-        </div>
-        <button class="remove-file" onclick="removeFile('${file.name}', ${file.size})">
-            <i class="fas fa-times"></i>
-        </button>
-    `;
-    
-    uploadedFilesContainer.appendChild(fileItem);
-}
-
-function removeFile(fileName, fileSize) {
-    // Remove from array
-    uploadedFiles = uploadedFiles.filter(file => !(file.name === fileName && file.size === fileSize));
-    
-    // Remove from DOM
-    const fileItems = uploadedFilesContainer.querySelectorAll('.file-item');
-    fileItems.forEach(item => {
-        const nameElement = item.querySelector('.file-name');
-        const sizeElement = item.querySelector('.file-size');
-        if (nameElement.textContent === fileName && sizeElement.textContent === formatFileSize(fileSize)) {
-            item.remove();
-        }
-    });
-    
-    updateAnalyzeButton();
-    showNotification('File removed', 'info');
 }
 
 function clearAll() {
-    uploadedFiles = [];
-    uploadedFilesContainer.innerHTML = '';
     jobTitle.value = '';
     jobDescription.value = '';
     requiredSkills.value = '';
     resultsSection.style.display = 'none';
     updateAnalyzeButton();
-    showNotification('All data cleared', 'info');
+    showNotification('All fields cleared', 'info');
 }
 
 function updateAnalyzeButton() {
-    const hasFiles = uploadedFiles.length > 0;
     const hasJobDescription = jobDescription.value.trim().length > 0;
-    
-    analyzeBtn.disabled = !hasFiles || !hasJobDescription || isAnalyzing;
+    analyzeBtn.disabled = !hasJobDescription || isAnalyzing;
 }
 
 // Analysis functions
 async function startAnalysis() {
-    if (isAnalyzing) return;
-    
-    isAnalyzing = true;
-    loadingOverlay.style.display = 'flex';
-    updateAnalyzeButton();
-    
-    try {
-        // Simulate AI processing time
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        
-        // Generate mock results
-        const results = generateMockResults();
-        
-        // Display results
-        displayResults(results);
-        
-        showNotification('Analysis completed successfully!', 'success');
-        
-    } catch (error) {
-        console.error('Analysis error:', error);
-        showNotification('Analysis failed. Please try again.', 'error');
-    } finally {
-        isAnalyzing = false;
-        loadingOverlay.style.display = 'none';
-        updateAnalyzeButton();
-    }
-}
+    const jobTitle = document.getElementById('jobTitle').value;
+    const jobDescription = document.getElementById('jobDescription').value;
+    const requiredSkills = document.getElementById('requiredSkills').value;
 
-function generateMockResults() {
-    const jobSkills = requiredSkills.value.toLowerCase().split(',').map(s => s.trim()).filter(s => s);
-    const allPossibleSkills = [
-        'javascript', 'python', 'react', 'nodejs', 'html', 'css', 'sql', 'java', 
-        'angular', 'vue', 'mongodb', 'postgresql', 'aws', 'docker', 'kubernetes',
-        'machine learning', 'data analysis', 'ui/ux design', 'project management',
-        'agile', 'scrum', 'git', 'typescript', 'express', 'django', 'flask'
-    ];
-    
-    return uploadedFiles.map((file, index) => {
-        // Generate random but realistic data
-        const score = Math.floor(Math.random() * 30) + 70; // 70-100 range
-        const experience = Math.floor(Math.random() * 8) + 1; // 1-8 years
-        const education = ['Bachelor\'s', 'Master\'s', 'PhD'][Math.floor(Math.random() * 3)];
-        
-        // Generate skills (some matching, some not)
-        const candidateSkills = [];
-        const numSkills = Math.floor(Math.random() * 8) + 5; // 5-12 skills
-        
-        // Add some required skills
-        if (jobSkills.length > 0) {
-            const matchingSkills = Math.floor(Math.random() * Math.min(jobSkills.length, 4)) + 1;
-            for (let i = 0; i < matchingSkills; i++) {
-                if (Math.random() > 0.3) {
-                    candidateSkills.push(jobSkills[Math.floor(Math.random() * jobSkills.length)]);
-                }
-            }
+    if (!jobDescription) {
+        showNotification('Please enter a job description', 'error');
+        return;
+    }
+
+    try {
+        showLoading(true);
+        const formData = new FormData();
+        formData.append('job_title', jobTitle);
+        formData.append('job_description', jobDescription);
+        formData.append('required_skills', requiredSkills);
+
+        const response = await fetch('http://localhost:8001/rank-resumes', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+        if (data.error) {
+            throw new Error(data.error);
         }
-        
-        // Add random skills
-        while (candidateSkills.length < numSkills) {
-            const skill = allPossibleSkills[Math.floor(Math.random() * allPossibleSkills.length)];
-            if (!candidateSkills.includes(skill)) {
-                candidateSkills.push(skill);
-            }
-        }
-        
-        return {
-            id: index + 1,
-            name: file.name.replace('.pdf', ''),
-            fileName: file.name,
-            score: score,
-            experience: experience,
-            education: education,
-            skills: candidateSkills,
-            location: ['New York, NY', 'San Francisco, CA', 'Austin, TX', 'Seattle, WA', 'Remote'][Math.floor(Math.random() * 5)],
-            email: `${file.name.replace('.pdf', '').toLowerCase().replace(/\s+/g, '.')}@email.com`
-        };
-    }).sort((a, b) => b.score - a.score); // Sort by score descending
+
+        displayResults(data.results);
+        showNotification('Analysis complete!', 'success');
+    } catch (error) {
+        console.error('Error during analysis:', error);
+        showNotification('Error during analysis: ' + error.message, 'error');
+    } finally {
+        showLoading(false);
+    }
 }
 
 function displayResults(results) {
     rankingContainer.innerHTML = '';
     
-    results.forEach((candidate, index) => {
-        const candidateCard = createCandidateCard(candidate, index + 1);
-        rankingContainer.appendChild(candidateCard);
-    });
+    // Filter and sort results
+    const filteredResults = results
+        .filter(candidate => candidate.score >= 60) // Filter out scores below 60%
+        .sort((a, b) => b.score - a.score) // Sort by score descending
+        .slice(0, 20); // Get top 20 results
+    
+    if (filteredResults.length === 0) {
+        rankingContainer.innerHTML = `
+            <div class="no-results">
+                <i class="fas fa-exclamation-circle"></i>
+                <h3>No Matching Candidates</h3>
+                <p>No candidates met the minimum score requirement of 60%.</p>
+            </div>
+        `;
+    } else {
+        filteredResults.forEach((candidate, index) => {
+            const candidateCard = document.createElement('div');
+            candidateCard.className = 'candidate-card';
+            
+            const scoreClass = candidate.score >= 80 ? 'high-match' : 
+                              candidate.score >= 70 ? 'medium-match' : 'low-match';
+            
+            candidateCard.innerHTML = `
+                <div class="candidate-rank">#${index + 1}</div>
+                <div class="candidate-info">
+                    <h3>${candidate.name}</h3>
+                    <div class="score-container">
+                        <div class="overall-score ${scoreClass}">
+                            <span class="score-label">Match Score</span>
+                            <span class="score-value">${candidate.score}%</span>
+                        </div>
+                        <div class="detailed-scores">
+                            <div class="score-item">
+                                <span class="score-label">Content Similarity</span>
+                                <span class="score-value">${candidate.similarity_score}%</span>
+                            </div>
+                            <div class="score-item">
+                                <span class="score-label">Skills Match</span>
+                                <span class="score-value">${candidate.skill_match_percentage}%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="skills-container">
+                        <h4>Matching Skills</h4>
+                        <div class="skills-list">
+                            ${candidate.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            rankingContainer.appendChild(candidateCard);
+        });
+    }
     
     resultsSection.style.display = 'block';
     resultsSection.scrollIntoView({ behavior: 'smooth' });
-}
-
-function createCandidateCard(candidate, rank) {
-    const jobSkills = requiredSkills.value.toLowerCase().split(',').map(s => s.trim()).filter(s => s);
-    
-    const card = document.createElement('div');
-    card.className = 'candidate-card';
-    
-    // Determine score color
-    let scoreColor = 'var(--success-color)';
-    if (candidate.score < 80) scoreColor = 'var(--warning-color)';
-    if (candidate.score < 70) scoreColor = 'var(--danger-color)';
-    
-    card.innerHTML = `
-        <div class="candidate-header">
-            <div class="candidate-info">
-                <h3>#${rank} ${candidate.name}</h3>
-                <p>${candidate.fileName}</p>
-            </div>
-            <div class="score-badge" style="background: ${scoreColor}">
-                ${candidate.score}%
-            </div>
-        </div>
-        
-        <div class="candidate-details">
-            <div class="detail-item">
-                <div class="detail-label">Experience</div>
-                <div class="detail-value">${candidate.experience} years</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Education</div>
-                <div class="detail-value">${candidate.education}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Location</div>
-                <div class="detail-value">${candidate.location}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Email</div>
-                <div class="detail-value">${candidate.email}</div>
-            </div>
-        </div>
-        
-        <div class="skills-match">
-            <div class="detail-label">Skills</div>
-            <div class="skills-list">
-                ${candidate.skills.map(skill => {
-                    const isMatched = jobSkills.some(jobSkill => 
-                        skill.toLowerCase().includes(jobSkill.toLowerCase()) || 
-                        jobSkill.toLowerCase().includes(skill.toLowerCase())
-                    );
-                    return `<span class="skill-tag ${isMatched ? 'matched' : ''}">${skill}</span>`;
-                }).join('')}
-            </div>
-        </div>
-    `;
-    
-    return card;
 }
 
 // Utility functions
@@ -315,68 +262,23 @@ function formatFileSize(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-function showNotification(message, type = 'info') {
-    // Create notification element
+// Show notification
+function showNotification(message, type = 'success') {
     const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
+    notification.className = `notification ${type}`;
     notification.innerHTML = `
-        <i class="fas fa-${getNotificationIcon(type)}"></i>
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
         <span>${message}</span>
     `;
-    
-    // Add styles
-    Object.assign(notification.style, {
-        position: 'fixed',
-        top: '20px',
-        right: '20px',
-        padding: '12px 20px',
-        borderRadius: '8px',
-        color: 'white',
-        fontWeight: '500',
-        zIndex: '10000',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-        transform: 'translateX(400px)',
-        transition: 'transform 0.3s ease',
-        backgroundColor: getNotificationColor(type),
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
-    });
-    
-    document.body.appendChild(notification);
-    
-    // Animate in
+    notificationContainer.appendChild(notification);
+
+    // Remove notification after 5 seconds
     setTimeout(() => {
-        notification.style.transform = 'translateX(0)';
-    }, 10);
-    
-    // Remove after 4 seconds
-    setTimeout(() => {
-        notification.style.transform = 'translateX(400px)';
+        notification.style.animation = 'slideOut 0.3s ease-out forwards';
         setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-            }
+            notification.remove();
         }, 300);
-    }, 4000);
-}
-
-function getNotificationIcon(type) {
-    switch (type) {
-        case 'success': return 'check-circle';
-        case 'warning': return 'exclamation-triangle';
-        case 'error': return 'times-circle';
-        default: return 'info-circle';
-    }
-}
-
-function getNotificationColor(type) {
-    switch (type) {
-        case 'success': return '#10b981';
-        case 'warning': return '#f59e0b';
-        case 'error': return '#ef4444';
-        default: return '#3b82f6';
-    }
+    }, 5000);
 }
 
 // Keyboard shortcuts
